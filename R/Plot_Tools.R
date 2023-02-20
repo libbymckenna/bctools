@@ -33,7 +33,7 @@ bc_colors <- c(purple = "#332a86",
 
 
 # Custom color palette code from: https://www.r-bloggers.com/2018/02/creating-corporate-colour-palettes-for-ggplot2/
-extract_hex() <- function(...) {
+extract_hex <- function(...) {
   cols <- c(...)
   if (is.null(cols))
     return (bc_colors)
@@ -42,8 +42,8 @@ extract_hex() <- function(...) {
 
 # Additional color palettes can be added here using a combo of the color names above. Need to check all for
 # color blind friendly and make sure they look good on a plot.
-bc_color_palettes <- list(primary = extract_hex(purple, green, blue, yellow),
-                          rainbow = extract_hex(bright_red, orange, yellow, light_green, blue, purple, warm_gray))
+bc_color_palettes <- list(primary = extract_hex("purple", "green", "blue", "yellow"),
+                          rainbow = extract_hex("bright_red", "orange", "yellow", "light_green", "blue", "purple", "warm_gray"))
 
 # Color palette checking:
 # https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#76b043%22,%22#009ed1%22,%22#ffc233%22,%22#43525a%22,%22#27bdbe%22,%22#c0cac7%22,%22#b84626%22,%22#cab0ff%22,%22#b38f6b%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
@@ -117,17 +117,35 @@ bc_pal <- function(palette = "primary", reverse = FALSE, ...) {
   colorRampPalette_d(pal, ...)
 }
 
-# Need to make sure these actually work
+########################################################################################################################*
+#' BC Color Palette with scale_color
+#'
+#' @param palette Name of color palette to use. Current options: "primary", "rainbow"
+#' @param discrete Set equal to false if gradient is desired
+#' @param reverse Set equal to TRUE if you want the colors in the opposite order
+#'
+#' @export
+#'
 scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE, ...) {
   pal <- bc_pal(palette = palette, reverse = reverse)
   if (discrete) {
+    # the paste0 arguement is for error messages
     discrete_scale("colour", paste0("bc_", palette), palette = pal, ...)
   } else {
     scale_color_gradientn(colours = pal(256), ...)
   }
 }
 
-scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE, ...) {
+########################################################################################################################*
+#' BC Color Palette with scale_fill
+#'
+#' @param palette Name of color palette to use. Current options: "primary", "rainbow"
+#' @param discrete Set equal to false if gradient is desired
+#' @param reverse Set equal to TRUE if you want the colors in the opposite order
+#'
+#' @export
+#'
+scale_fill_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE, ...) {
   pal <- bc_pal(palette = palette, reverse = reverse)
   if (discrete) {
     discrete_scale("fill", paste0("bc_", palette), palette = pal, ...)
@@ -235,9 +253,10 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 
 iris <- iris %>%
   mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
-ggplot(iris, aes(x = Species, y = Sepal.Width)) +
-  geom_boxandwhisker(width = .5, fill = "purple", fontsize = 12) +
-  theme_bw(base_size = 15)
+ggplot(iris, aes(x = Species, y = Sepal.Width, fill = Species)) +
+  geom_boxandwhisker(width = .5, fontsize = 12) +
+  theme_bc() +
+  scale_fill_bc()
 
 
 ########################################################################################################################*
@@ -264,10 +283,11 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
           legend.box.background = element_rect(fill = "transparent", color = NA))
 }
 
-ggplot(iris, aes(x = Sepal.Width, y = Petal.Width)) +
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
   geom_point() +
   facet_wrap(~Species) +
-  theme_bc()
+  theme_bc() +
+  scale_color_bc(palette = "rainbow", discrete = FALSE, reverse = TRUE)
 
 ########################################################################################################################*
 #' Creates a png file of plots with automatic scaling for adding to word documents
