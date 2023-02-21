@@ -42,7 +42,7 @@ extract_hex <- function(...) {
 
 # Additional color palettes can be added here using a combo of the color names above. Need to check all for
 # color blind friendly and make sure they look good on a plot.
-bc_color_palettes <- list(primary = extract_hex("purple", "green", "blue", "yellow"),
+bc_color_palettes <- list(primary = extract_hex("purple", "green", "blue", "yellow", "teal", "bright_red", "light_brown"),
                           rainbow = extract_hex("bright_red", "orange", "yellow", "light_green", "blue", "purple", "warm_gray"))
 
 # Color palette checking:
@@ -254,7 +254,7 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 iris <- iris %>%
   mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
 ggplot(iris, aes(x = Species, y = Sepal.Width, fill = Species)) +
-  geom_boxandwhisker(width = .5, fontsize = 12) +
+  geom_boxandwhisker(width = .5, fontsize = 10, outlier = FALSE, middlepoint = "90th", whiskerbar = FALSE) +
   theme_bc() +
   scale_fill_bc()
 
@@ -278,8 +278,8 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
           strip.background = element_rect(fill = "#332a86", colour = "#43525a"),
           strip.text = element_text(colour = "white", size = rel(0.8),
                        margin = margin(0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2)),
-          legend.key = element_rect(fill = "transparent", colour = NA), complete = TRUE,
-          legend.background = element_rect(fill = "transparent"),
+          legend.key = element_rect(fill = "transparent", colour = NA),
+          legend.background = element_rect(fill = "transparent", color = NA),
           legend.box.background = element_rect(fill = "transparent", color = NA))
 }
 
