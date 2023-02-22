@@ -291,18 +291,18 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
 
 
 # Test code
-iris <- iris %>%
-  mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
-ggplot(iris, aes(x = Species, y = Sepal.Width, fill = binpetal)) +
-  geom_boxandwhisker() +
-  theme_bc() +
-  scale_fill_bc()
-
-ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
-  geom_point() +
-  facet_wrap(~Species) +
-  theme_bc() +
-  scale_color_bc(palette = "rainbow", discrete = FALSE)
+# iris <- iris %>%
+#   mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
+# ggplot(iris, aes(x = Species, y = Sepal.Width, fill = binpetal)) +
+#   geom_boxandwhisker() +
+#   theme_bc() +
+#   scale_fill_bc()
+# 
+# ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
+#   geom_point() +
+#   facet_wrap(~Species) +
+#   theme_bc() +
+#   scale_color_bc(palette = "rainbow", discrete = FALSE)
 
 ########################################################################################################################*
 #' Creates a png file of plots with automatic scaling for adding to word documents
