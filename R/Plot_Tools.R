@@ -314,7 +314,7 @@ ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
 #'
 #' @export
 #'
-export_plot <- function(plot, filename = "DRAFT R Plot", vscale = 1){
+export_plot <- function(plot, filename = "DRAFT R Plot", vscale = 1, hscale = 1){
 
   ggplot2::ggsave(plot = plot, filename = paste(filename, ".png", sep = ""),
                   width = 6.5*hscale, height = 4*vscale, units = "in", dpi = 300, bg = "transparent")
