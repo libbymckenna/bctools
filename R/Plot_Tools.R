@@ -29,7 +29,7 @@ bc_colors <- c(purple = "#332a86",
                brown = "#472a14",
                light_brown = "#b38f6b",
                charcoal = "#444d3e",
-               # These are other tints of some colors for use in plots
+               # These are other tints of some colors for use in plots. (To find tints: https://www.colorhexa.com/)
                light_purple = "#aba5e3",
                lighter_green = "#A8D085",
                light_red = "#de7d62")
