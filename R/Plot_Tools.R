@@ -2,7 +2,7 @@
 
 ########################################################################################################################*
 
-# BC Color List
+# BC COLOR LIST ----
 #'
 #' @export
 #'
@@ -28,11 +28,16 @@ bc_colors <- c(purple = "#332a86",
                yellow = "#ffc233",
                brown = "#472a14",
                light_brown = "#b38f6b",
-               charcoal = "#444d3e")
+               charcoal = "#444d3e",
+               # These are other tints of some colors for use in plots
+               light_purple = "#aba5e3",
+               lighter_green = "#A8D085",
+               light_red = "#de7d62")
 
-
+########################################################################################################################*
 
 # Custom color palette code from: https://www.r-bloggers.com/2018/02/creating-corporate-colour-palettes-for-ggplot2/
+# Function to pull the hex codes from the list for use below
 extract_hex <- function(...) {
   cols <- c(...)
   if (is.null(cols))
@@ -40,14 +45,20 @@ extract_hex <- function(...) {
   bc_colors[cols]
 }
 
-# Additional color palettes can be added here using a combo of the color names above. Need to check all for
-# color blind friendly and make sure they look good on a plot.
-bc_color_palettes <- list(primary = extract_hex("purple", "green", "blue", "yellow", "teal", "bright_red", "light_brown"),
-                          rainbow = extract_hex("bright_red", "orange", "yellow", "light_green", "blue", "purple", "warm_gray"))
+########################################################################################################################*
 
-# Color palette checking:
-# https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#76b043%22,%22#009ed1%22,%22#ffc233%22,%22#43525a%22,%22#27bdbe%22,%22#c0cac7%22,%22#b84626%22,%22#cab0ff%22,%22#b38f6b%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
+# PALETTE SELECTION ----
+# Additional color palettes can be added here using a combo of the color names above. Try to ensure all palettes are
+# color blind friendly using this website:
+# https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#ffc233%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
+bc_color_palettes <- list(primary = extract_hex("purple", "yellow", "dark_green", "teal", 
+                                                        "light_purple", "orange", "lighter_green", "dark_blue",
+                                                        "light_red", "cool_gray"),
+                          rainbow = extract_hex("bright_red", "orange", "yellow", "dark_green", "teal", "purple"),
+                          bigrainbow = extract_hex("light_red", "bright_red", "orange", "yellow", "lighter_green",
+                                                   "dark_green", "teal", "dark_blue", "light_purple", "purple", "cool_gray"))
 
+########################################################################################################################*
 
 # Use code from stack overflow to make a color palette that can interpolate additional colors but maintain the order of
 # the color palette: https://stackoverflow.com/questions/61674217/custom-discrete-color-scale-in-ggplot-does-not-respect-order
@@ -59,7 +70,7 @@ colorRamp_d <- function (colors, n,
                                          "spline"),
                          alpha = FALSE){
 
-  # PRELIMINARY STEPS ----------------
+  # PRELIMINARY STEPS 
   if (bias <= 0)
     stop("'bias' must be positive")
   if (!missing(space) && alpha)
@@ -68,7 +79,7 @@ colorRamp_d <- function (colors, n,
   space <- match.arg(space)
   interpolate <- match.arg(interpolate)
 
-  # CUT THE COLOR VECTOR ----------------------
+  # CUT THE COLOR VECTOR 
 
   if (space == "Lab")
     colors <- convertColor(colors, from = "sRGB", to = "Lab")
@@ -118,6 +129,7 @@ bc_pal <- function(palette = "primary", reverse = FALSE, ...) {
 }
 
 ########################################################################################################################*
+# GGPLOT COLOR FUNCTIONS ----
 #' BC Color Palette with scale_color
 #'
 #' @param palette Name of color palette to use. Current options: "primary", "rainbow"
@@ -156,6 +168,10 @@ scale_fill_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE,
 
 
 ########################################################################################################################*
+########################################################################################################################*
+########################################################################################################################*
+
+# BOX AND WHISKER ----
 
 #' Box and Whisker Plot function that uses 25th and 75th percentile for the box and 5th and 95th percentiles for whiskers.
 #' The middle point can be at the mean or 90th percentile.
@@ -241,23 +257,13 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
     # This adds the horizontal bars on the whiskers
     if (whiskerbar)
       ggplot2::stat_summary(fun.data = low_bar, geom = "errorbar", position = ggplot2::position_dodge(0.9),
-                            width = 0.9 * width),
+                            width = 0.8 * width),
     if (whiskerbar)
       ggplot2::stat_summary(fun.data = high_bar, geom = "errorbar", position = ggplot2::position_dodge(0.9),
-                            width = 0.9 * width)
+                            width = 0.8 * width)
   )
 
 }
-
-
-
-iris <- iris %>%
-  mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
-ggplot(iris, aes(x = Species, y = Sepal.Width, fill = Species)) +
-  geom_boxandwhisker(width = .5, fontsize = 10, outlier = FALSE, middlepoint = "90th", whiskerbar = FALSE) +
-  theme_bc() +
-  scale_fill_bc()
-
 
 ########################################################################################################################*
 
@@ -283,11 +289,20 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
           legend.box.background = element_rect(fill = "transparent", color = NA))
 }
 
+
+# Test code
+iris <- iris %>%
+  mutate(binpetal = as.factor(round(Petal.Width/.5)*.5))
+ggplot(iris, aes(x = Species, y = Sepal.Width, fill = binpetal)) +
+  geom_boxandwhisker() +
+  theme_bc() +
+  scale_fill_bc()
+
 ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
   geom_point() +
   facet_wrap(~Species) +
   theme_bc() +
-  scale_color_bc(palette = "rainbow", discrete = FALSE, reverse = TRUE)
+  scale_color_bc(palette = "rainbow", discrete = FALSE)
 
 ########################################################################################################################*
 #' Creates a png file of plots with automatic scaling for adding to word documents
