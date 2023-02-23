@@ -62,6 +62,8 @@ bc_color_palettes <- list(primary = extract_hex("purple", "yellow", "dark_green"
 
 # Use code from stack overflow to make a color palette that can interpolate additional colors but maintain the order of
 # the color palette: https://stackoverflow.com/questions/61674217/custom-discrete-color-scale-in-ggplot-does-not-respect-order
+# See answer from linog (https://stackoverflow.com/users/9197726/linog)
+# Need to add ",drop=FALSE" to the line "if (n<nrow(colors)) colors <- colors[1:n,]" for it to work for one color
 
 colorRamp_d <- function (colors, n,
                          bias = 1,
@@ -87,7 +89,7 @@ colorRamp_d <- function (colors, n,
                         spline = stats::splinefun)
 
   # RESPECT ORDER IF NCLASSES<NCOLORS
-  if (n<nrow(colors)) colors <- colors[1:n,]
+  if (n<nrow(colors)) colors <- colors[1:n,,drop=FALSE]
 
   if ((nc <- nrow(colors)) == 1L) {
     colors <- colors[c(1L, 1L), ]
