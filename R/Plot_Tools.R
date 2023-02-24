@@ -51,9 +51,9 @@ extract_hex <- function(...) {
 # Additional color palettes can be added here using a combo of the color names above. Try to ensure all palettes are
 # color blind friendly using this website:
 # https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#ffc233%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
-bc_color_palettes <- list(primary = extract_hex("purple", "yellow", "dark_green", "teal", 
+bc_color_palettes <- list(primary = extract_hex("purple", "dark_green", "teal", 
                                                         "light_purple", "orange", "lighter_green", "dark_blue",
-                                                        "light_red", "cool_gray"),
+                                                        "light_red", "yellow", "cool_gray"),
                           rainbow = extract_hex("bright_red", "orange", "yellow", "dark_green", "teal", "purple"),
                           bigrainbow = extract_hex("light_red", "bright_red", "orange", "yellow", "lighter_green",
                                                    "dark_green", "teal", "dark_blue", "light_purple", "purple", "cool_gray"))
@@ -286,9 +286,11 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
           strip.background = element_rect(fill = "#332a86", colour = "#43525a"),
           strip.text = element_text(colour = "white", size = rel(0.8),
                        margin = margin(0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2)),
+          strip.text.y = element_text(angle = 90),
           legend.key = element_rect(fill = "transparent", colour = NA),
           legend.background = element_rect(fill = "transparent", color = NA),
-          legend.box.background = element_rect(fill = "transparent", color = NA))
+          legend.box.background = element_rect(fill = "transparent", color = NA),
+          axis.title.y.right = element_text(angle = 90, margin = margin(l = base_size/4), vjust = 0))
 }
 
 
