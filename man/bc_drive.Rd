@@ -5,12 +5,12 @@
 \title{Sets a general file location so different users don't have to change their R Scripts. Note that this works with ProjectWise Drive
 and OneDrive when you have connected projects to your local system.}
 \usage{
-bc_drive(ProjectFolder, Drive = "OneDrive")
+bc_drive(projectfolder, drive = "OneDrive")
 }
 \arguments{
-\item{ProjectFolder}{Specify the rest of the file path in quotes}
+\item{projectfolder}{Specify the rest of the file path in quotes}
 
-\item{Drive}{Drive type, choose between "OneDrive", "ProjectWise", and "PersonalOneDrive"}
+\item{drive}{Drive type, choose between "OneDrive", "ProjectWise", and "PersonalOneDrive"}
 }
 \description{
 Sets a general file location so different users don't have to change their R Scripts. Note that this works with ProjectWise Drive
