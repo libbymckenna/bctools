@@ -4,7 +4,7 @@
 \alias{export_plot}
 \title{Creates a png file of plots with automatic scaling for adding to word documents}
 \usage{
-export_plot(plot, filename = "DRAFT R Plot", vscale = 1, hscale = 1)
+export_plot(plot, filename = "DRAFT R Plot", vscale = 1, hwidth = 6.5)
 }
 \arguments{
 \item{plot}{Plot to be exported}
@@ -13,7 +13,7 @@ export_plot(plot, filename = "DRAFT R Plot", vscale = 1, hscale = 1)
 
 \item{vscale}{Default height is 4", based on typical plot ratios to copy into a word doc.  Increase scale to multiply size.}
 
-\item{hscale}{Default width is 6.5", only change the scale if plot is being added to a different page width.}
+\item{hwidth}{Default width is 6.5", only change if plot is being added to a different page width. Specify in inches.}
 }
 \description{
 Creates a png file of plots with automatic scaling for adding to word documents

@@ -51,7 +51,7 @@ extract_hex <- function(...) {
 # Additional color palettes can be added here using a combo of the color names above. Try to ensure all palettes are
 # color blind friendly using this website:
 # https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#ffc233%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
-bc_color_palettes <- list(primary = extract_hex("purple", "dark_green", "teal", 
+bc_color_palettes <- list(primary = extract_hex("purple", "dark_green", "teal",
                                                         "light_purple", "orange", "lighter_green", "dark_blue",
                                                         "light_red", "yellow", "cool_gray"),
                           rainbow = extract_hex("bright_red", "orange", "yellow", "dark_green", "teal", "purple"),
@@ -72,7 +72,7 @@ colorRamp_d <- function (colors, n,
                                          "spline"),
                          alpha = FALSE){
 
-  # PRELIMINARY STEPS 
+  # PRELIMINARY STEPS
   if (bias <= 0)
     stop("'bias' must be positive")
   if (!missing(space) && alpha)
@@ -81,7 +81,7 @@ colorRamp_d <- function (colors, n,
   space <- match.arg(space)
   interpolate <- match.arg(interpolate)
 
-  # CUT THE COLOR VECTOR 
+  # CUT THE COLOR VECTOR
 
   if (space == "Lab")
     colors <- convertColor(colors, from = "sRGB", to = "Lab")
@@ -301,7 +301,7 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
 #   geom_boxandwhisker() +
 #   theme_bc() +
 #   scale_fill_bc()
-# 
+#
 # ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Petal.Length)) +
 #   geom_point() +
 #   facet_wrap(~Species) +
@@ -314,14 +314,14 @@ theme_bc <- function (base_size = 11, base_family = "", ...) {
 #' @param plot Plot to be exported
 #' @param filename Desired file name in quotes without file extension.
 #' @param vscale Default height is 4", based on typical plot ratios to copy into a word doc.  Increase scale to multiply size.
-#' @param hscale Default width is 6.5", only change the scale if plot is being added to a different page width.
+#' @param hwidth Default width is 6.5", only change if plot is being added to a different page width. Specify in inches.
 #'
 #' @export
 #'
-export_plot <- function(plot, filename = "DRAFT R Plot", vscale = 1, hscale = 1){
+export_plot <- function(plot, filename = "DRAFT R Plot", vscale = 1, hwidth = 6.5){
 
   ggplot2::ggsave(plot = plot, filename = paste(filename, ".png", sep = ""),
-                  width = 6.5*hscale, height = 4*vscale, units = "in", dpi = 300, bg = "transparent")
+                  width = hwidth, height = 4*vscale, units = "in", dpi = 300, bg = "transparent")
 
 }
 
