@@ -51,9 +51,10 @@ extract_hex <- function(...) {
 # Additional color palettes can be added here using a combo of the color names above. Try to ensure all palettes are
 # color blind friendly using this website:
 # https://projects.susielu.com/viz-palette?colors=[%22#332a86%22,%22#ffc233%22]&backgroundColor=%22white%22&fontColor=%22black%22&mode=%22normal%22
-bc_color_palettes <- list(primary = extract_hex("purple", "dark_green", "teal",
-                                                        "light_purple", "orange", "lighter_green", "dark_blue",
-                                                        "light_red", "yellow", "cool_gray"),
+bc_color_palettes <- list(primary = extract_hex("purple", "orange", "dark_green", "teal",
+                                                        "light_purple", "yellow", "lighter_green", "dark_blue",
+                                                        "light_red", "cool_gray"),
+                          fourcolor = extract_hex("purple", "orange", "dark_green", "teal"),
                           rainbow = extract_hex("bright_red", "orange", "yellow", "dark_green", "teal", "purple"),
                           bigrainbow = extract_hex("light_red", "bright_red", "orange", "yellow", "lighter_green",
                                                    "dark_green", "teal", "dark_blue", "light_purple", "purple", "cool_gray"))
