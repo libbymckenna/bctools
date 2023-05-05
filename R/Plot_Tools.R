@@ -188,48 +188,64 @@ scale_fill_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE,
 #' @param alpha Can be set to a different transparency or NA if an alpha scale is needed (not recommended).
 #' @param width Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.
 #' @param fontsize Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.
+#' @param whiskerloc Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.
+#' @param countlabel Can be set to TRUE if you want the count to appear as n=#
 #'
 #' @export
 #'
 geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mean", whiskerbar = TRUE,
-                                alpha = .8, width = .9, fontsize = 9, ...) {
+                                alpha = .8, width = .9, fontsize = 9, whiskerloc = .05, countlabel = FALSE,
+                                whiskerlabel = FALSE, boxedgelabel = FALSE, medianlabel = FALSE, ...) { # haven't added this functionality yet
 
   # Box and Whiskers - these functions set up for the stat_summary functions
+  lowwhisker <- whiskerloc
+  hiwhisker <- 1 - whiskerloc
 
   # Quantiles for the boxplot function
   boxplot_info <- function(x) {
-    r <- quantile(x, probs = c(0.05, 0.25, 0.5, 0.75, 0.95))
+    r <- quantile(x, probs = c(lowwhisker, 0.25, 0.5, 0.75, hiwhisker))
     names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
     r
   }
 
   # For the horizontal bars on the ends of the whiskers (errorbar)
   low_bar <- function(x) {
-    range <- quantile(x, probs = c(0.05, 0.25))
+    range <- quantile(x, probs = c(lowwhisker, 0.25))
     names(range) <- c("ymin", "ymax")
     range
   }
   high_bar <- function(x) {
-    range <- quantile(x, probs = c(0.75, 0.95))
+    range <- quantile(x, probs = c(0.75, hiwhisker))
     names(range) <- c("ymin", "ymax")
     range
   }
 
   # For the outlier points (point)
   outlier_points <- function(x) {
-    subset(x, x < quantile(x,0.05) | quantile(x,0.95) < x)
+    subset(x, x < quantile(x,lowwhisker) | quantile(x,hiwhisker) < x)
   }
 
   # For the count (text). Location changes depending on whether outlier points are included.
   if (outlier == TRUE){
     ncount <- function(x){
-      return(c(y = min(x), label = length(x)))
+      if (countlabel == TRUE) {
+        return(data.frame(y = min(x), label = paste0("n=",length(x))))
+      } else {
+        return(data.frame(y = min(x), label = length(x)))
+      }
     }
   } else if (outlier == FALSE){
     ncount <- function(x){
-      return(c(y = as.numeric(quantile(x, 0.05)), label = length(x)))
+      if (countlabel == TRUE) {
+        return(data.frame(y = as.numeric(quantile(x, lowwhisker)), label = paste0("n=",length(x))))
+      } else {
+        return(data.frame(y = as.numeric(quantile(x, lowwhisker)), label = length(x)))
+      }
     }
   }
+
+
+
 
   # Returns a list of stat_summary for the full plot
   list(
