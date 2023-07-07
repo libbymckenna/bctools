@@ -14,6 +14,11 @@ geom_boxandwhisker(
   alpha = 0.8,
   width = 0.9,
   fontsize = 9,
+  whiskerloc = 0.05,
+  countlabel = FALSE,
+  whiskerlabel = FALSE,
+  boxedgelabel = FALSE,
+  medianlabel = FALSE,
   ...
 )
 }
@@ -31,6 +36,10 @@ geom_boxandwhisker(
 \item{width}{Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.}
 
 \item{fontsize}{Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.}
+
+\item{whiskerloc}{Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.}
+
+\item{countlabel}{Can be set to TRUE if you want the count to appear as n=#}
 }
 \description{
 Box and Whisker Plot function that uses 25th and 75th percentile for the box and 5th and 95th percentiles for whiskers.
