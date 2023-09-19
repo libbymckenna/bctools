@@ -222,8 +222,15 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 
   # For the outlier points (point)
   outlier_points <- function(x) {
-    subset(x, x < quantile(x,lowwhisker) | quantile(x,hiwhisker) < x)
+    outliers <- subset(x, x < quantile(x,lowwhisker) | quantile(x,hiwhisker) < x)
+    fillpoint <- subset(x, x == quantile(x, .5))
+    if(length(outliers) == 0){
+      data.frame(y = fillpoint, colour = NA)
+    } else {
+      data.frame(y = outliers, colour = "black")
+    }
   }
+
 
   # For the count (text). Location changes depending on whether outlier points are included.
   if (outlier == TRUE){
@@ -259,7 +266,7 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 
     # This adds the outlier points
     if (outlier)
-      ggplot2::stat_summary(fun = outlier_points, geom= "point", position = ggplot2::position_dodge(0.9)),
+      ggplot2::stat_summary(fun.data = outlier_points, geom= "point", position = ggplot2::position_dodge(0.9)),
 
     # This adds the count (vjust spaces it away from the plot)
     if (count)
@@ -285,6 +292,122 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 }
 
 ########################################################################################################################*
+########################################################################################################################*
+########################################################################################################################*
+
+# BOX AND WHISKER LEGEND ----
+#' Box and Whisker Plot Legend for geom_boxandwhisker
+#' Accepts the same arguments as geom_boxandwhisker with some additional for fixing legend appearance
+#' You will have to manually add this to your B+W plots using cowplot or gridextra functions
+#'
+#'
+#' @param fill Default setting is BC purple, can specify other hex codes or ggplot colors.
+#' @param widthscale Legend spacing is hard, you can mess with this (approx range 0.5-1.5) to try to fit things better.
+#' @param outlier Can be set to FALSE to remove points <5th percentile and >95th percentile.
+#' @param count Can be set to FALSE to remove count from below the whisker.
+#' @param middlepoint Can be equal to "mean" (default) or "90th" to select location, can be set to FALSE to remove.
+#' @param whiskerbar Can be set to FALSE to remove horizontal bars on the ends of the whiskers.
+#' @param alpha Can be set to a different transparency or NA if an alpha scale is needed (not recommended).
+#' @param width Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.
+#' @param fontsize Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.
+#' @param whiskerloc Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.
+#' @param countlabel Can be set to TRUE if you want the count to appear as n=#
+#'
+#' @examples
+#' legend_only <- boxwhisker_legend()
+#' legend_plot <- ggdraw(your_plot) + draw_plot(legend_only, x = .65, y = .6, width = .35, height = .4)
+#'
+#' @export
+#'
+boxwhisker_legend <- function(fill = "#332a86", widthscale = 1, meaninside = TRUE,
+                              outlier = TRUE, count = TRUE, middlepoint = "mean", whiskerbar = TRUE,
+                              alpha = .8, fontsize = 9, whiskerloc = .05, countlabel = FALSE, ...) {
+
+  # xlocations
+  nearx = ifelse(meaninside, 1.1, 1.5)
+  midx = 1.2
+  farx = 1.5
+  adjustx <- ifelse(whiskerbar, farx, midx)
+
+  # Whisker locations
+  whiskerlow <- whiskerloc
+  whiskerhigh <- 1- whiskerloc
+
+  # Legend data
+  set.seed(307)
+  legend_data <- tibble(yvalues = c(rnorm(48, mean = 50, sd = 10), 50,50,50,50,50,50,20,21.5,24,30,30,30))
+
+  legend_labels <- legend_data %>%
+    summarise(P05 = quantile(yvalues, whiskerlow),
+              P25 = quantile(yvalues, .25),
+              P50 = quantile(yvalues, .5),
+              P75 = quantile(yvalues, .75),
+              P95 = quantile(yvalues, whiskerhigh),
+              low = quantile(yvalues, whiskerlow) - 5,
+              high = quantile(yvalues, whiskerhigh) + 10,
+              count = min(yvalues),
+              mean = mean(yvalues),
+              P90 = quantile(yvalues, .9)) %>%
+    pivot_longer(c(P05, P25, P50, P75, P95, low, high, count, mean, P90), names_to = "ID", values_to = "yloc") %>%
+    mutate(Label = case_when(ID == "P05" ~ paste0(whiskerlow*100, "th percentile"),
+                             ID == "P25" ~ "25th percentile",
+                             ID == "P50" ~ "Median",
+                             ID == "P75" ~ "75th percentile",
+                             ID == "P95" ~ paste0(whiskerhigh*100, "th percentile"),
+                             ID == "low" ~ paste0("<", whiskerlow*100, "th percentile"),
+                             ID == "high" ~ paste0(">", whiskerhigh*100, "th percentile"),
+                             ID == "mean" ~ "Mean",
+                             ID == "P90" ~ "90th percentile",
+                             ID == "count" ~ "Number of values"),
+           xloc = case_when(ID == "P25" | ID == "P50" | ID == "P75" ~ farx,
+                            ID == "low" | ID == "high" | ID == "count" | ID == "P90" ~ midx,
+                            ID == "mean" ~ nearx,
+                            ID == "P05" | ID == "P95" ~ adjustx))
+
+  count_lab <- legend_labels %>%
+    filter(ID == "count")
+
+  legend_labels <- legend_labels %>%
+      filter(ID != "count")
+
+  if(!outlier) {
+    legend_labels <- legend_labels %>%
+      filter(ID != "low" & ID != "high")
+    count_lab$yloc <- legend_labels$yloc[legend_labels$ID == "P05"]
+  }
+
+  if(middlepoint == "mean") {
+    legend_labels <- legend_labels %>%
+      filter(ID != "P90")
+  } else if (middlepoint == "90th") {
+    legend_labels <- legend_labels %>%
+      filter(ID != "mean")
+  } else {
+    legend_labels <- legend_labels %>%
+      filter(ID != "P90" & ID != "mean")
+  }
+
+  ggplot(legend_data, aes(x = 1, y = yvalues)) +
+    geom_boxandwhisker(outlier = outlier, count = count, middlepoint = middlepoint, whiskerbar = whiskerbar,
+                       alpha = alpha, fontsize = fontsize, whiskerloc = whiskerloc, countlabel = countlabel,
+                       whiskerlabel = FALSE, boxedgelabel = FALSE, medianlabel = FALSE, fill = fill, ...) +
+    geom_text(data = legend_labels, aes(x = xloc, y = yloc, label = Label), size = fontsize/.pt, vjust = .5, hjust = 0) +
+    theme_bc() +
+    theme(axis.text = element_blank(),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          panel.grid = element_blank()) +
+    coord_cartesian(xlim = c(.5,2.5 / widthscale)) +
+    scale_y_continuous(expand = expand_scale(mult = c(.12,.05))) +
+    if(count & !countlabel)
+      geom_text(data = count_lab, aes(x = xloc, y = yloc, label = Label), size = fontsize/.pt, vjust = 1.5, hjust = 0)
+
+
+}
+
+boxwhisker_legend(widthscale = .5)
+
+########################################################################################################################*
 
 #' Theme function for BC defaults
 #' Automatically sets BC color palette.
@@ -294,20 +417,21 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 #'
 #' @export
 #'
-theme_bc <- function (base_size = 11, base_family = "", ...) {
+theme_bc <- function (base_size = 12, base_family = "", ...) {
   theme_bw(base_size = base_size, base_family = base_family, ...) %+replace%
     theme(plot.background = element_rect(fill = "transparent", color = NA),
           panel.border = element_rect(fill = NA, colour = "#43525a"),
           panel.grid = element_line(colour = "#f1f2f2"),
           panel.grid.minor = element_blank(),
           strip.background = element_rect(fill = "#332a86", colour = "#43525a"),
-          strip.text = element_text(colour = "white", size = rel(0.8),
+          strip.text = element_text(colour = "white", size = rel(0.9),
                        margin = margin(0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2, 0.8 * base_size/2)),
           strip.text.y = element_text(angle = 90),
           legend.key = element_rect(fill = "transparent", colour = NA),
           legend.background = element_rect(fill = "transparent", color = NA),
           legend.box.background = element_rect(fill = "transparent", color = NA),
-          axis.title.y.right = element_text(angle = 90, margin = margin(l = base_size/4), vjust = 0))
+          axis.title.y.right = element_text(angle = 90, margin = margin(l = base_size/4), vjust = 0, size = base_size),
+          axis.text = element_text(size = rel(0.9)))
 }
 
 
