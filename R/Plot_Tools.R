@@ -223,11 +223,11 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
   # For the outlier points (point)
   outlier_points <- function(x) {
     outliers <- subset(x, x < quantile(x,lowwhisker) | quantile(x,hiwhisker) < x)
-    fillpoint <- subset(x, x == quantile(x, .5))
+    fillpoint <- unname(quantile(x, .5))
     if(length(outliers) == 0){
       data.frame(y = fillpoint, colour = NA)
     } else {
-      data.frame(y = outliers, colour = "black")
+      data.frame(y = outliers, colour = rep("black", length(outliers)))
     }
   }
 
