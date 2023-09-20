@@ -5,7 +5,7 @@
 \title{Theme function for BC defaults
 Automatically sets BC color palette.}
 \usage{
-theme_bc(base_size = 11, base_family = "", ...)
+theme_bc(base_size = 12, base_family = "", ...)
 }
 \arguments{
 \item{base_size}{Can be set to adjust default font sizes}

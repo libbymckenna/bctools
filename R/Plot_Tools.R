@@ -295,120 +295,6 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
 ########################################################################################################################*
 ########################################################################################################################*
 
-# BOX AND WHISKER LEGEND ----
-#' Box and Whisker Plot Legend for geom_boxandwhisker
-#' Accepts the same arguments as geom_boxandwhisker with some additional for fixing legend appearance
-#' You will have to manually add this to your B+W plots using cowplot or gridextra functions
-#'
-#'
-#' @param fill Default setting is BC purple, can specify other hex codes or ggplot colors.
-#' @param widthscale Legend spacing is hard, you can mess with this (approx range 0.5-1.5) to try to fit things better.
-#' @param outlier Can be set to FALSE to remove points <5th percentile and >95th percentile.
-#' @param count Can be set to FALSE to remove count from below the whisker.
-#' @param middlepoint Can be equal to "mean" (default) or "90th" to select location, can be set to FALSE to remove.
-#' @param whiskerbar Can be set to FALSE to remove horizontal bars on the ends of the whiskers.
-#' @param alpha Can be set to a different transparency or NA if an alpha scale is needed (not recommended).
-#' @param width Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.
-#' @param fontsize Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.
-#' @param whiskerloc Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.
-#' @param countlabel Can be set to TRUE if you want the count to appear as n=#
-#'
-#' @examples
-#' legend_only <- boxwhisker_legend()
-#' legend_plot <- ggdraw(your_plot) + draw_plot(legend_only, x = .65, y = .6, width = .35, height = .4)
-#'
-#' @export
-#'
-boxwhisker_legend <- function(fill = "#332a86", widthscale = 1, meaninside = TRUE,
-                              outlier = TRUE, count = TRUE, middlepoint = "mean", whiskerbar = TRUE,
-                              alpha = .8, fontsize = 9, whiskerloc = .05, countlabel = FALSE, ...) {
-
-  # xlocations
-  nearx = ifelse(meaninside, 1.1, 1.5)
-  midx = 1.2
-  farx = 1.5
-  adjustx <- ifelse(whiskerbar, farx, midx)
-
-  # Whisker locations
-  whiskerlow <- whiskerloc
-  whiskerhigh <- 1- whiskerloc
-
-  # Legend data
-  set.seed(307)
-  legend_data <- tibble(yvalues = c(rnorm(48, mean = 50, sd = 10), 50,50,50,50,50,50,20,21.5,24,30,30,30))
-
-  legend_labels <- legend_data %>%
-    summarise(P05 = quantile(yvalues, whiskerlow),
-              P25 = quantile(yvalues, .25),
-              P50 = quantile(yvalues, .5),
-              P75 = quantile(yvalues, .75),
-              P95 = quantile(yvalues, whiskerhigh),
-              low = quantile(yvalues, whiskerlow) - 5,
-              high = quantile(yvalues, whiskerhigh) + 10,
-              count = min(yvalues),
-              mean = mean(yvalues),
-              P90 = quantile(yvalues, .9)) %>%
-    pivot_longer(c(P05, P25, P50, P75, P95, low, high, count, mean, P90), names_to = "ID", values_to = "yloc") %>%
-    mutate(Label = case_when(ID == "P05" ~ paste0(whiskerlow*100, "th percentile"),
-                             ID == "P25" ~ "25th percentile",
-                             ID == "P50" ~ "Median",
-                             ID == "P75" ~ "75th percentile",
-                             ID == "P95" ~ paste0(whiskerhigh*100, "th percentile"),
-                             ID == "low" ~ paste0("<", whiskerlow*100, "th percentile"),
-                             ID == "high" ~ paste0(">", whiskerhigh*100, "th percentile"),
-                             ID == "mean" ~ "Mean",
-                             ID == "P90" ~ "90th percentile",
-                             ID == "count" ~ "Number of values"),
-           xloc = case_when(ID == "P25" | ID == "P50" | ID == "P75" ~ farx,
-                            ID == "low" | ID == "high" | ID == "count" | ID == "P90" ~ midx,
-                            ID == "mean" ~ nearx,
-                            ID == "P05" | ID == "P95" ~ adjustx))
-
-  count_lab <- legend_labels %>%
-    filter(ID == "count")
-
-  legend_labels <- legend_labels %>%
-      filter(ID != "count")
-
-  if(!outlier) {
-    legend_labels <- legend_labels %>%
-      filter(ID != "low" & ID != "high")
-    count_lab$yloc <- legend_labels$yloc[legend_labels$ID == "P05"]
-  }
-
-  if(middlepoint == "mean") {
-    legend_labels <- legend_labels %>%
-      filter(ID != "P90")
-  } else if (middlepoint == "90th") {
-    legend_labels <- legend_labels %>%
-      filter(ID != "mean")
-  } else {
-    legend_labels <- legend_labels %>%
-      filter(ID != "P90" & ID != "mean")
-  }
-
-  ggplot(legend_data, aes(x = 1, y = yvalues)) +
-    geom_boxandwhisker(outlier = outlier, count = count, middlepoint = middlepoint, whiskerbar = whiskerbar,
-                       alpha = alpha, fontsize = fontsize, whiskerloc = whiskerloc, countlabel = countlabel,
-                       whiskerlabel = FALSE, boxedgelabel = FALSE, medianlabel = FALSE, fill = fill, ...) +
-    geom_text(data = legend_labels, aes(x = xloc, y = yloc, label = Label), size = fontsize/.pt, vjust = .5, hjust = 0) +
-    theme_bc() +
-    theme(axis.text = element_blank(),
-          axis.title = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid = element_blank()) +
-    coord_cartesian(xlim = c(.5,2.5 / widthscale)) +
-    scale_y_continuous(expand = expand_scale(mult = c(.12,.05))) +
-    if(count & !countlabel)
-      geom_text(data = count_lab, aes(x = xloc, y = yloc, label = Label), size = fontsize/.pt, vjust = 1.5, hjust = 0)
-
-
-}
-
-boxwhisker_legend(widthscale = .5)
-
-########################################################################################################################*
-
 #' Theme function for BC defaults
 #' Automatically sets BC color palette.
 #'
@@ -449,6 +335,117 @@ theme_bc <- function (base_size = 12, base_family = "", ...) {
 #   theme_bc() +
 #   scale_color_bc(palette = "rainbow", discrete = FALSE)
 
+########################################################################################################################*
+
+# BOX AND WHISKER LEGEND ----
+#' Box and Whisker Plot Legend for geom_boxandwhisker
+#' Accepts the same arguments as geom_boxandwhisker with some additional for fixing legend appearance
+#' You will have to manually add this to your B+W plots using cowplot or gridextra functions
+#'
+#'
+#' @param fill Default setting is BC purple, can specify other hex codes or ggplot colors.
+#' @param widthscale Legend spacing is hard, you can mess with this (approx range 0.5-1.5) to try to fit things better.
+#' @param outlier Can be set to FALSE to remove points <5th percentile and >95th percentile.
+#' @param count Can be set to FALSE to remove count from below the whisker.
+#' @param middlepoint Can be equal to "mean" (default) or "90th" to select location, can be set to FALSE to remove.
+#' @param whiskerbar Can be set to FALSE to remove horizontal bars on the ends of the whiskers.
+#' @param alpha Can be set to a different transparency or NA if an alpha scale is needed (not recommended).
+#' @param width Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.
+#' @param fontsize Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.
+#' @param whiskerloc Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.
+#' @param countlabel Can be set to TRUE if you want the count to appear as n=#
+#'
+#' @examples
+#' legend_only <- boxwhisker_legend()
+#' legend_plot <- ggdraw(your_plot) + draw_plot(legend_only, x = .65, y = .6, width = .35, height = .4)
+#'
+#' @export
+#'
+boxwhisker_legend <- function(fill = "#332a86", widthscale = 1, meaninside = TRUE,
+                              outlier = TRUE, count = TRUE, middlepoint = "mean", whiskerbar = TRUE,
+                              alpha = .8, fontsize = 9, whiskerloc = .05, countlabel = FALSE, ...) {
+  require(magrittr)
+
+  # xlocations
+  nearx = ifelse(meaninside, 1.1, 1.5)
+  midx = 1.2
+  farx = 1.5
+  adjustx <- ifelse(whiskerbar, farx, midx)
+
+  # Whisker locations
+  whiskerlow <- whiskerloc
+  whiskerhigh <- 1- whiskerloc
+
+  # Legend data
+  set.seed(307)
+  legend_data <- data.frame(yvalues = c(rnorm(48, mean = 50, sd = 10), 50,50,50,50,50,50,20,21.5,24,30,30,30))
+
+  legend_labels <- legend_data %>%
+    dplyr::summarise(P05 = quantile(yvalues, whiskerlow),
+                     P25 = quantile(yvalues, .25),
+                     P50 = quantile(yvalues, .5),
+                     P75 = quantile(yvalues, .75),
+                     P95 = quantile(yvalues, whiskerhigh),
+                     low = quantile(yvalues, whiskerlow) - 5,
+                     high = quantile(yvalues, whiskerhigh) + 10,
+                     count = min(yvalues),
+                     mean = mean(yvalues),
+                     P90 = quantile(yvalues, .9)) %>%
+    tidyr::pivot_longer(c(P05, P25, P50, P75, P95, low, high, count, mean, P90), names_to = "ID", values_to = "yloc") %>%
+    dplyr::mutate(Label = dplyr::case_when(ID == "P05" ~ paste0(whiskerlow*100, "th percentile"),
+                                           ID == "P25" ~ "25th percentile",
+                                           ID == "P50" ~ "Median",
+                                           ID == "P75" ~ "75th percentile",
+                                           ID == "P95" ~ paste0(whiskerhigh*100, "th percentile"),
+                                           ID == "low" ~ paste0("<", whiskerlow*100, "th percentile"),
+                                           ID == "high" ~ paste0(">", whiskerhigh*100, "th percentile"),
+                                           ID == "mean" ~ "Mean",
+                                           ID == "P90" ~ "90th percentile",
+                                           ID == "count" ~ "Number of values"),
+                  xloc = dplyr::case_when(ID == "P25" | ID == "P50" | ID == "P75" ~ farx,
+                                          ID == "low" | ID == "high" | ID == "count" | ID == "P90" ~ midx,
+                                          ID == "mean" ~ nearx,
+                                          ID == "P05" | ID == "P95" ~ adjustx))
+
+  count_lab <-  dplyr::filter(legend_labels, ID == "count")
+
+  legend_labels <- dplyr::filter(legend_labels, ID != "count")
+
+  if(!outlier) {
+    legend_labels <- dplyr::filter(legend_labels, ID != "low" & ID != "high")
+    count_lab$yloc <- legend_labels$yloc[legend_labels$ID == "P05"]
+  }
+
+  if(middlepoint == "mean") {
+    legend_labels <- dplyr::filter(legend_labels, ID != "P90")
+  } else if (middlepoint == "90th") {
+    legend_labels <- dplyr::filter(legend_labels, ID != "mean")
+  } else {
+    legend_labels <- dplyr::filter(legend_labels, ID != "P90" & ID != "mean")
+  }
+
+  ggplot2::ggplot(legend_data, ggplot2::aes(x = 1, y = yvalues)) +
+    geom_boxandwhisker(outlier = outlier, count = count, middlepoint = middlepoint, whiskerbar = whiskerbar,
+                       alpha = alpha, fontsize = fontsize, whiskerloc = whiskerloc, countlabel = countlabel,
+                       whiskerlabel = FALSE, boxedgelabel = FALSE, medianlabel = FALSE, fill = fill, ...) +
+    ggplot2::geom_text(data = legend_labels, ggplot2::aes(x = xloc, y = yloc, label = Label), size = fontsize/ggplot2::.pt, vjust = .5, hjust = 0) +
+    theme_bc() +
+    ggplot2::theme(axis.text = ggplot2::element_blank(),
+                   axis.title = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   panel.grid = ggplot2::element_blank()) +
+    ggplot2::coord_cartesian(xlim = c(.5,2.5 / widthscale)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expand_scale(mult = c(.12,.05))) +
+    if(count & !countlabel)
+      ggplot2::geom_text(data = count_lab, ggplot2::aes(x = xloc, y = yloc, label = Label), size = fontsize/ggplot2::.pt, vjust = 1.5, hjust = 0)
+
+
+}
+
+# boxwhisker_legend(widthscale = .5)
+
+########################################################################################################################*
+########################################################################################################################*
 ########################################################################################################################*
 #' Creates a png file of plots with automatic scaling for adding to word documents
 #'

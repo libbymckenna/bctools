@@ -2,6 +2,7 @@
 
 export(bc_colors)
 export(bc_drive)
+export(boxwhisker_legend)
 export(export_plot)
 export(geom_boxandwhisker)
 export(scale_color_bc)
