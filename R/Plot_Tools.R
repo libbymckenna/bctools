@@ -186,15 +186,18 @@ scale_fill_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE,
 #' @param middlepoint Can be equal to "mean" (default) or "90th" to select location, can be set to FALSE to remove.
 #' @param whiskerbar Can be set to FALSE to remove horizontal bars on the ends of the whiskers.
 #' @param alpha Can be set to a different transparency or NA if an alpha scale is needed (not recommended).
-#' @param width Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.
+#' @param width Can be set to a number between 0 and 1, with lower numbers narrowing boxes.
 #' @param fontsize Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.
 #' @param whiskerloc Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.
 #' @param countlabel Can be set to TRUE if you want the count to appear as n=#
+#' @param preserve Can be set to "single" or "total". See position_dodge documentation for the difference.
+#' @param padding Sets the spacing between boxes. Works best between 0.1 and 0.5
 #'
 #' @export
 #'
 geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mean", whiskerbar = TRUE,
                                 alpha = .8, width = .9, fontsize = 9, whiskerloc = .05, countlabel = FALSE,
+                                preserve = "single", padding = .1,
                                 whiskerlabel = FALSE, boxedgelabel = FALSE, medianlabel = FALSE, ...) { # haven't added this functionality yet
 
   # Box and Whiskers - these functions set up for the stat_summary functions
@@ -258,35 +261,40 @@ geom_boxandwhisker <- function (outlier = TRUE, count = TRUE, middlepoint = "mea
   list(
     # This makes the actual box and whisker
     if(!is.na(alpha))
-    ggplot2::stat_summary(fun.data = boxplot_info, geom = "boxplot", position = ggplot2::position_dodge(0.9),
+    ggplot2::stat_summary(fun.data = boxplot_info, geom = "boxplot",
+                          position = position_dodge2(width = width,preserve=preserve, padding = padding),
                           alpha = alpha, width = width, ...),
     if(is.na(alpha))
-      ggplot2::stat_summary(fun.data = boxplot_info, geom = "boxplot", position = ggplot2::position_dodge(0.9),
+      ggplot2::stat_summary(fun.data = boxplot_info, geom = "boxplot",
+                            position = position_dodge2(width = width,preserve=preserve, padding = padding),
                             width = width, ...),
 
     # This adds the outlier points
     if (outlier)
-      ggplot2::stat_summary(fun.data = outlier_points, geom= "point", position = ggplot2::position_dodge(0.9)),
+      ggplot2::stat_summary(fun.data = outlier_points, geom= "point", position = position_dodge(width), ...),
 
     # This adds the count (vjust spaces it away from the plot)
     if (count)
-      ggplot2::stat_summary(fun.data = ncount, geom = "text", vjust = 1.5, position = ggplot2::position_dodge(0.9),
-                            size = fontsize / ggplot2::.pt),
+      ggplot2::stat_summary(fun.data = ncount, geom = "text", vjust = 1.5, position = position_dodge2(width = width, preserve=preserve),
+                            size = fontsize / ggplot2::.pt, ...),
 
     # This makes the point at the mean or 90th percentile
     if (middlepoint == "mean")
-      ggplot2::stat_summary(fun = mean, geom = "point", shape = 8, colour = "black", position = ggplot2::position_dodge(0.9)),
+      ggplot2::stat_summary(fun = mean, geom = "point", shape = 8, colour = "black",
+                            position = position_dodge2(width = width, preserve=preserve), ...),
     if (middlepoint == "90th")
       ggplot2::stat_summary(fun = quantile, fun.args = list(probs = 0.9),  geom = "point", shape = 8, colour = "black",
-                            position = ggplot2::position_dodge(0.9)),
+                            position = position_dodge2(width = width, preserve=preserve), ...),
 
     # This adds the horizontal bars on the whiskers
     if (whiskerbar)
-      ggplot2::stat_summary(fun.data = low_bar, geom = "errorbar", position = ggplot2::position_dodge(0.9),
-                            width = 0.8 * width),
+      ggplot2::stat_summary(fun.data = low_bar, geom = "errorbar",
+                            position = position_dodge2(width = width, preserve=preserve, padding = padding+.2),
+                            width = width),
     if (whiskerbar)
-      ggplot2::stat_summary(fun.data = high_bar, geom = "errorbar", position = ggplot2::position_dodge(0.9),
-                            width = 0.8 * width)
+      ggplot2::stat_summary(fun.data = high_bar, geom = "errorbar",
+                            position = position_dodge2(width = width, preserve=preserve, padding = padding+.2),
+                            width = width)
   )
 
 }

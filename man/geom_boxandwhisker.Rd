@@ -16,6 +16,8 @@ geom_boxandwhisker(
   fontsize = 9,
   whiskerloc = 0.05,
   countlabel = FALSE,
+  preserve = "single",
+  padding = 0.1,
   whiskerlabel = FALSE,
   boxedgelabel = FALSE,
   medianlabel = FALSE,
@@ -33,13 +35,17 @@ geom_boxandwhisker(
 
 \item{alpha}{Can be set to a different transparency or NA if an alpha scale is needed (not recommended).}
 
-\item{width}{Can be set to a number between 0 and 1, with lower numbers increasing space between boxes.}
+\item{width}{Can be set to a number between 0 and 1, with lower numbers narrowing boxes.}
 
 \item{fontsize}{Can be used to adjust the size of the count. Use a number equivalent to a standard size in points.}
 
 \item{whiskerloc}{Can be used to adjust the percentile that the whiskers extend to, use the low value, high will be calculated.}
 
 \item{countlabel}{Can be set to TRUE if you want the count to appear as n=#}
+
+\item{preserve}{Can be set to "single" or "total". See position_dodge documentation for the difference.}
+
+\item{padding}{Sets the spacing between boxes. Works best between 0.1 and 0.5}
 }
 \description{
 Box and Whisker Plot function that uses 25th and 75th percentile for the box and 5th and 95th percentiles for whiskers.
