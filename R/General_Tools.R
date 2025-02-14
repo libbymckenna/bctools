@@ -17,6 +17,9 @@
 #'     File path:  C:/Users/yourname/ProjectWise/Brown & Caldwell
 #'   * "MyOneDrive" : Files in your personal OneDrive documents.
 #'     File path: C:/Users/yourname/OneDrive - Brown and Caldwell/Documents/
+#'   * "Egnyte" : Folders in the Egnyte desktop app. App must be installed on computer for the function to work.
+#'     File path: Y:/Shared/Clients
+#'
 #' @param projectfolder Specify the rest of the file path in quotes
 #'
 #' @examples bc_drive("Reuse Pilot/Data", "Personal One Drive")
@@ -43,8 +46,12 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
     DrivePath <- "/OneDrive - Brown and Caldwell/Documents/"
     DrivePath2 <- DrivePath
     DrivePath3 <- DrivePath
+  } else if (grepl("egnyte", drive, ignore.case = TRUE)) {
+    DrivePath <- "Y:/Shared/Clients/"
+    DrivePath2 <- DrivePath
+    DrivePath3 <- DrivePath
   } else {
-    stop("Specified drive does not match current options. Use 'CodeReview', 'OneDrive', 'ProjectWise' or 'MyOneDrive'")
+    stop("Specified drive does not match current options. Use 'CodeReview', 'OneDrive', 'ProjectWise', 'MyOneDrive', or 'Egnyte'")
   }
 
   dir1 <- paste0("C:/Users/", UserID, DrivePath)
@@ -57,6 +64,8 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
     dir <- dir2
   } else if(dir.exists(dir3)) {
     dir <- dir3
+  } else if(dir.exists(DrivePath)) {
+    dir <- DrivePath
   } else {
     stop("No folders found in expected file PW or OneDrive paths. Contact Sierra or Libby to update this function with your file path.")
   }
