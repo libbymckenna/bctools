@@ -24,6 +24,7 @@
 #'
 #' @examples bc_drive("Reuse Pilot/Data", "Personal One Drive")
 #' bc_drive("000000 - Project Name/001 Task Name/01 Subfolder", "projectwise")
+#' bc_drive("Golden_City of-CO/153349 - Golden WTP Facility Plan/", drive = "Egnyte")
 #'
 #' @export
 #'
@@ -67,7 +68,7 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
   } else if(dir.exists(DrivePath)) {
     dir <- DrivePath
   } else {
-    stop("No folders found in expected file PW or OneDrive paths. Contact Sierra or Libby to update this function with your file path.")
+    stop("No folders found in expected file PW, OneDrive, or Egnyte paths. Contact Sierra or Libby to update this function with your file path.")
   }
 
   dir0 <- paste0(dir, projectfolder)
@@ -85,7 +86,7 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
     setwd(dir3)
   } else {
     setwd(dir)
-    warning("Project Folder not found. Working drive was set to main PW or OneDrive folder specified.")
+    warning("Project Folder not found. Working drive was set to main PW, OneDrive, or Egnyte folder specified.")
   }
 
 }
