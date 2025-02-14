@@ -88,7 +88,7 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
 #' Factor water quality data to produce a standard table
 #'
 #' @param data Data frame containing the column of water quality data to be factored
-#' @param parameter_column Column of water quality parameters
+#' @param parameter_column Column of water quality parameters.
 #'
 #' @export
 #'
@@ -128,9 +128,9 @@ factor_wq <- function(data, parameter_column, ...) {
 
   # Apply the mapping to the parameter column
   data2 <- data %>%
-    mutate(!!sym(parameter_column) := factor(parameter_map[!!sym(parameter_column)],
+    mutate({{parameter_column}} := factor(parameter_map[{{parameter_column}}],
                                             levels = levels_order)) %>%
-    arrange(!!sym(parameter_column))
+    arrange({{parameter_column}})
 
   return(data2)
 }
