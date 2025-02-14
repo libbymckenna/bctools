@@ -96,6 +96,7 @@ factor_wq <- function(data, parameter_column, ...) {
 
   levels_order <- c("pH", "Alkalinity", "Temperature", "DOC", "TOC", "UVA", "Fluoride",
                     "Calcium Hardness", "Magnesium Hardness", "Total Hardness", "Sodium", "Potassium",
+                    "Iron (dissolved)", "Iron (total)", "Manganese (dissolved)", "Manganese (total)",
                     "Chloride", "Sulfate", "Nitrate", "Bromide", "Total Dissolved Solids",  "Conductivity", "Turbidity"
                     )
 
@@ -112,9 +113,13 @@ factor_wq <- function(data, parameter_column, ...) {
 
     "Calcium Hardness" = "Calcium Hardness", "calcium" = "Calcium Hardness", "Calcium" = "Calcium Hardness", "calcium hardness"= "Calcium Hardness", "ca_hard" = "Calcium Hardness",
     "Magnesium Hardness" = "Magnesium Hardness", "magnesium" = "Magnesium Hardness", "Magnesium" = "Magnesium Hardness", "magnesium hardness"= "Magnesium Hardness", "mg_hard" = "Calcium Hardness",
-    "total hardness" = "Total Hardness", "tot_hard" = "Total Hardness", "total hard" = "Total Hardness", "Total Hardness"="Total Hardness",
+    "total hardness" = "Total Hardness", "tot_hard" = "Total Hardness", "Hardness" = "Total Hardness", "total hard" = "Total Hardness", "Total Hardness"="Total Hardness",
     "Sodium" = "Sodium", "sodium" = "Sodium", "na" = "Sodium",
     "Potassium" = "Potassium", "k" = "Potassium", "potassium" = "Potassium",
+    "Iron (dissolved)" = "Iron (dissolved)", "Iron-Dissolved" = "Iron (dissolved)",
+    "Iron (total)" =  "Iron (total)", "Iron-Total" =  "Iron (total)",
+    "Manganese (dissolved)" = "Manganese (dissolved)", "Manganese-Dissolved" = "Manganese (dissolved)",
+    "Manganese (total)" = "Manganese (total)",  "Manganese-Total"  = "Manganese (total)",
 
     "Chloride" = "Chloride", "chloride" = "Chloride", "cl" = "Chloride",
     "Sulfate" = "Sulfate", "so4" = "Sulfate", "sulfate" = "Sulfate",
