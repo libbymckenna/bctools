@@ -156,7 +156,7 @@ scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE
 #' @param data Data frame containing a column of named corrosion/scaling indices
 #' @param alpha Set the opacity of the rectangles, default is 0.1
 #' @param fill Set the color of the rectangles, default is "cyan"
-#' @param index_columne Name of the columns with corrosion/scaling indices
+#' @param index_column Name of the columns with corrosion/scaling indices
 #'
 #' @export
 #'
