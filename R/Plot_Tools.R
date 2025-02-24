@@ -152,11 +152,11 @@ scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE
 }
 
 # GGPLOT CORROSION FUNCTIONS ----
-#' BC Color Palette with scale_color
+#' Automatically add typical corrosion ranges to plots
 #' @param data Data frame containing a column of named corrosion/scaling indices
-#' @param alpha Set the opacity of the rectangles, default is 0.1
+#' @param alpha Set the opacity of the rectangles, default is 0.3
 #' @param fill Set the color of the rectangles, default is "cyan"
-#' @param index_column Name of the columns with corrosion/scaling indices
+#' @param index_column Name of the column in the plot data frame with corrosion/scaling indices names (should be the column used for facetting)
 #'
 #' @export
 #'
