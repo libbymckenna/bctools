@@ -91,4 +91,68 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
 
 }
 
+########################################################################################################################*
+########################################################################################################################*
+########################################################################################################################*
+# FACTOR WQ ----
+#' Factor water quality data to produce a standard table
+#'
+#' @param data Data frame containing the column of water quality data to be factored
+#' @param parameter_column Name of column with water quality parameter names.
+#'
+#' @examples
+#' water <- water_df %>%
+#'   pivot_longer(everything(), names_to = "param", values_to = "result") %>%
+#'   factor_wq(param)
+#'
+#'
+#' @export
+#'
+factor_wq <- function(data, parameter_column, ...) {
 
+  levels_order <- c("pH", "Alkalinity", "Temperature", "DOC", "TOC", "UVA", "Fluoride",
+                    "Calcium Hardness", "Magnesium Hardness", "Total Hardness", "Sodium", "Potassium",
+                    "Iron (dissolved)", "Iron (total)", "Manganese (dissolved)", "Manganese (total)",
+                    "Chloride", "Sulfate", "Nitrate", "Bromide", "Total Dissolved Solids",  "Conductivity", "Turbidity"
+                    )
+
+  # Aliases for each factor level
+  parameter_map <- c(
+
+    "ph" = "pH",
+    "alkalinity" = "Alkalinity", "alk" = "Alkalinity",
+    "temperature" = "Temperature", "temp" = "Temperature",
+    "doc" = "DOC", "dissolved organic carbon" = "DOC",
+    "toc" = "TOC", "total organic carbon" = "TOC",
+    "uv" = "UVA", "uv254" = "UVA", "uva" = "UVA",
+    "fluoride" = "Fluoride", "fluor" = "Fluoride",
+
+    "calcium" = "Calcium Hardness", "calcium hardness"= "Calcium Hardness", "ca_hard" = "Calcium Hardness",
+    "magnesium" = "Magnesium Hardness", "magnesium hardness"= "Magnesium Hardness", "mg_hard" = "Calcium Hardness",
+    "total hardness" = "Total Hardness", "tot_hard" = "Total Hardness", "hardness" = "Total Hardness", "total hard" = "Total Hardness",
+    "sodium" = "Sodium", "na" = "Sodium",
+    "k" = "Potassium", "potassium" = "Potassium",
+    "iron (dissolved)" = "Iron (dissolved)", "iron-dissolved" = "Iron (dissolved)",
+    "iron (total)" =  "iron (total)", "iron-total" =  "Iron (total)",
+    "manganese (dissolved)" = "Manganese (dissolved)", "manganese-dissolved" = "Manganese (dissolved)",
+    "manganese (total)" = "Manganese (total)",  "manganese-total"  = "Manganese (total)",
+
+    "chloride" = "Chloride", "cl" = "Chloride",
+    "so4" = "Sulfate", "sulfate" = "Sulfate",
+    "nitrate" = "Nitrate", "no3" = "Nitrate",
+    "br" = "Bromide", "bromide" = "Bromide",
+    "total dissolved solids" = "Total Dissolved Solids", "tds" = "Total Dissolved Solids",
+    "cond" = "Conductivity", "conductivity" = "Conductivity",
+    "turbidity" = "Turbidity", "turb" = "Turbidity"
+
+    )
+
+  # Apply the mapping to the parameter column
+  data2 <- data %>%
+    mutate({{parameter_column}} := tolower({{parameter_column}}),
+      {{parameter_column}} := factor(parameter_map[{{parameter_column}}],
+                                            levels = levels_order)) %>%
+    arrange({{parameter_column}})
+
+  return(data2)
+}
