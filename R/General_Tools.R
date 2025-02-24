@@ -88,7 +88,7 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
 #' Factor water quality data to produce a standard table
 #'
 #' @param data Data frame containing the column of water quality data to be factored
-#' @param parameter_column Column of water quality parameters.
+#' @param parameter_column Name of column with water quality parameter names.
 #'
 #' @examples
 #' water <- water_df %>%
