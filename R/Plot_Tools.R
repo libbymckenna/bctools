@@ -153,10 +153,23 @@ scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE
 
 # GGPLOT CORROSION FUNCTIONS ----
 #' Automatically add typical corrosion ranges to plots
+#' Ranges are based on this corrosion write up, already QC'd by Damon Roth (access to doc for BC employees only)
+#' https://brwncald-my.sharepoint.com/:w:/p/lmckenna/Ebhc5hMxdZpHq5aKyoaGijQBheBR0EYLVtEEMJFaXpnARw?e=kRv8dX
 #' @param data Data frame containing a column of named corrosion/scaling indices
 #' @param alpha Set the opacity of the rectangles, default is 0.3
 #' @param fill Set the color of the rectangles, default is "cyan"
 #' @param index_column Name of the column in the plot data frame with corrosion/scaling indices names (should be the column used for facetting)
+#'
+#' @examples
+#' corr_plot <- water_df %>%
+#'   define_water_chain() %>%
+#'   calculate_corrosion_once() %>%
+#'   pivot_longer(aggressive:csmr, names_to = "index", values_to = "result")
+#'
+#' ggplot(corr_plot, aes(x = ph, y = result)) +
+#'   geom_point() +
+#'   facet_wrap(~index) +
+#'   geom_corrosion_ranges(data = corr_plot, index_column = "index")
 #'
 #' @export
 #'
@@ -169,8 +182,8 @@ geom_corrosion_ranges <- function(data,
 
   plot_data <- data %>%
     select(!!sym(index_column)) %>%
-    unique() %>% # this makes sure there is only noe rectanlge per index. Otherwise multiple rectangles are drawn and alpha doesn't work well
-    mutate( ymin= case_when( grepl("lange|Lange|LSI", !!sym(index_column)) ~ 0.5,
+    unique() %>% # this makes sure there is only one rectangle per index. Otherwise multiple rectangles are drawn and alpha doesn't work well
+    mutate( ymin= case_when( grepl("lange|Lange|LSI", !!sym(index_column)) ~ -0.5,
                              grepl("ryz|Ryz|RI",  !!sym(index_column)) ~ 6,
                              grepl("ccpp|CCPP|Calcium C",  !!sym(index_column)) ~ 4,
                              grepl("larso|Lars|LI",  !!sym(index_column)) ~ -Inf,
@@ -187,7 +200,6 @@ return(geom_rect(data = plot_data, aes(ymin = ymin, ymax = ymax),
                  xmin = xmin, xmax = xmax, alpha = alpha, fill = fill, inherit.aes = FALSE))
 
 }
-
 
 #######################################################################################################################*
 #' BC Color Palette with scale_fill
