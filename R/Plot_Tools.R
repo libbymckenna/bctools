@@ -170,17 +170,17 @@ geom_corrosion_ranges <- function(data,
   plot_data <- data %>%
     select(!!sym(index_column)) %>%
     unique() %>% # this makes sure there is only noe rectanlge per index. Otherwise multiple rectangles are drawn and alpha doesn't work well
-    mutate( ymin= case_when( grepl("lange|Lange|LSI", !!sym(index_column)) ~ 0,
-                             grepl("ryz|Ryz|RI",  !!sym(index_column)) ~ 6.2,
-                             grepl("ccpp|CCPP|Calcium C",  !!sym(index_column)) ~ 5,
+    mutate( ymin= case_when( grepl("lange|Lange|LSI", !!sym(index_column)) ~ 0.5,
+                             grepl("ryz|Ryz|RI",  !!sym(index_column)) ~ 6,
+                             grepl("ccpp|CCPP|Calcium C",  !!sym(index_column)) ~ 4,
                              grepl("larso|Lars|LI",  !!sym(index_column)) ~ -Inf,
                              grepl("csmr|CSMR|Chloride",  !!sym(index_column)) ~ -Inf,
                              grepl("agg|Agg|AI",  !!sym(index_column)) ~ 12),
-            ymax =case_when( grepl("lange|Lange|LSI",  !!sym(index_column)) ~ Inf,
-                             grepl("ryz|Ryz|RI",  !!sym(index_column)) ~ 6.8,
+            ymax =case_when( grepl("lange|Lange|LSI",  !!sym(index_column)) ~ 0.5,
+                             grepl("ryz|Ryz|RI",  !!sym(index_column)) ~ 7,
                              grepl("ccpp|CCPP|Calcium C",  !!sym(index_column)) ~ 10,
-                             grepl("larso|Lars|LI",  !!sym(index_column)) ~ 0.8,
-                             grepl("csmr|CSMR|Chloride",  !!sym(index_column)) ~ 0.2,
+                             grepl("larso|Lars|LI",  !!sym(index_column)) ~ 5,
+                             grepl("csmr|CSMR|Chloride",  !!sym(index_column)) ~ 0.6,
                              grepl("agg|Agg|AI",  !!sym(index_column)) ~ Inf))
 
 return(geom_rect(data = plot_data, aes(ymin = ymin, ymax = ymax),
