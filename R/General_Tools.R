@@ -110,7 +110,7 @@ bc_drive <- function(projectfolder, drive = "CodeReview") {
 #'
 factor_wq <- function(data, parameter_column, ...) {
 
-  levels_order <- c("pH", "Alkalinity", "Temperature", "DOC", "TOC", "UVA", "Fluoride",
+  levels_order <- c("pH", "Alkalinity", "Temperature", "DOC", "TOC", "UVA", "SUVA", "Fluoride",
                     "Calcium Hardness", "Magnesium Hardness", "Total Hardness", "Sodium", "Potassium",
                     "Iron (dissolved)", "Iron (total)", "Manganese (dissolved)", "Manganese (total)",
                     "Chloride", "Sulfate", "Nitrate", "Bromide", "Total Dissolved Solids",  "Conductivity", "Turbidity"
@@ -124,7 +124,8 @@ factor_wq <- function(data, parameter_column, ...) {
     "temperature" = "Temperature", "temp" = "Temperature",
     "doc" = "DOC", "dissolved organic carbon" = "DOC",
     "toc" = "TOC", "total organic carbon" = "TOC",
-    "uv" = "UVA", "uv254" = "UVA", "uva" = "UVA",
+    "uv" = "UVA", "uv254" = "UVA", "uva" = "UVA", "uv absorbance" = "UVA",
+    "suva" = "SUVA", "specific uv absorbance" = "SUVA", "specific uva" = "SUVA",
     "fluoride" = "Fluoride", "fluor" = "Fluoride",
 
     "calcium" = "Calcium Hardness", "calcium hardness"= "Calcium Hardness", "ca_hard" = "Calcium Hardness",
