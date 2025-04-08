@@ -133,7 +133,7 @@ bc_pal <- function(palette = "primary", reverse = FALSE, ...) {
 
 ########################################################################################################################*
 # GGPLOT COLOR FUNCTIONS ----
-#' BC Color Palette with scale_color
+#' @title BC Color Palette with scale_color
 #'
 #' @param palette Name of color palette to use. Current options: "primary", "rainbow"
 #' @param discrete Set equal to false if gradient is desired
@@ -152,7 +152,9 @@ scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE
 }
 
 # GGPLOT CORROSION FUNCTIONS ----
-#' Automatically add typical corrosion ranges to plots
+#' @title Corrosion Index Ranges
+#' @description
+#' Automatically add typical corrosion ranges to plots. Note: MUST use data argument, MUST use index_column argument. See example.
 #' Ranges are based on this corrosion write up, already QC'd by Damon Roth (access to doc for BC employees only)
 #' https://brwncald-my.sharepoint.com/:w:/p/lmckenna/Ebhc5hMxdZpHq5aKyoaGijQBheBR0EYLVtEEMJFaXpnARw?e=kRv8dX
 #' @param data Data frame containing a column of named corrosion/scaling indices
@@ -161,6 +163,7 @@ scale_color_bc <- function(palette = "primary", discrete = TRUE, reverse = FALSE
 #' @param index_column Name of the column in the plot data frame with corrosion/scaling indices names (should be the column used for facetting)
 #'
 #' @examples
+#' library(tidywater)
 #' corr_plot <- water_df %>%
 #'   define_water_chain() %>%
 #'   calculate_corrosion_once() %>%

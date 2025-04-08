@@ -2,9 +2,7 @@
 % Please edit documentation in R/Plot_Tools.R
 \name{geom_corrosion_ranges}
 \alias{geom_corrosion_ranges}
-\title{Automatically add typical corrosion ranges to plots
-Ranges are based on this corrosion write up, already QC'd by Damon Roth (access to doc for BC employees only)
-https://brwncald-my.sharepoint.com/:w:/p/lmckenna/Ebhc5hMxdZpHq5aKyoaGijQBheBR0EYLVtEEMJFaXpnARw?e=kRv8dX}
+\title{Corrosion Index Ranges}
 \usage{
 geom_corrosion_ranges(
   data,
@@ -26,11 +24,12 @@ geom_corrosion_ranges(
 \item{index_column}{Name of the column in the plot data frame with corrosion/scaling indices names (should be the column used for facetting)}
 }
 \description{
-Automatically add typical corrosion ranges to plots
+Automatically add typical corrosion ranges to plots. Note: MUST use data argument, MUST use index_column argument. See example.
 Ranges are based on this corrosion write up, already QC'd by Damon Roth (access to doc for BC employees only)
 https://brwncald-my.sharepoint.com/:w:/p/lmckenna/Ebhc5hMxdZpHq5aKyoaGijQBheBR0EYLVtEEMJFaXpnARw?e=kRv8dX
 }
 \examples{
+library(tidywater)
 corr_plot <- water_df \%>\%
   define_water_chain() \%>\%
   calculate_corrosion_once() \%>\%
