@@ -204,6 +204,71 @@ return(geom_rect(data = plot_data, aes(ymin = ymin, ymax = ymax),
 
 }
 
+#' @title Lead contour plot
+#' @description
+#' Generates a heat map of lead solids and a transition line between controlling lead solids.
+#' @param ph_range Set the pH range, defaults to seq(6, 10, 0.1).
+#' @param alk_range Set the pH range, defaults to seq(1, 50, 1).
+#' @param tds_average Average tds of your data, defaults to 50 mg/L.
+#'
+#' @examples
+#' library(tidywater)
+
+#' ggplot() +
+#'   geom_corrosion_heatmap() +
+#'   geom_text(x =10, y = 8, label = "Hydrocerussite", color = "white", size = 5) +
+#'   geom_text(x = 10, y = 6.5, label = "Cerussite", color = "white", size = 5) +
+#'   theme_bc()+
+#'   labs(fill = "log Pb Conc\n(mg/L)", x = "Alkalinity (mg/L)", color = "", y = "pH", shape = "") +
+#'   coord_cartesian(xlim = c(6, 40),ylim = c(6,10))+
+#'   theme(legend.position = "bottom")
+#'
+#' ggplot() +
+#'   geom_corrosion_heatmap(alk_range = seq(40,250,10))+
+#'   geom_point(data = tidywater::water_df, aes(x = alk, y = ph, shape = "Historical Data"), color = "grey") +
+#'   geom_text(aes(x = 100, y = 9), label = "Hydrocerussite", color = "white", size = 5) +
+#'   geom_text(aes(x = 100, y = 7), label = "Cerussite", color = "white", size = 5) +
+#'   theme_bc()+
+#'   labs(fill = "log Pb Conc\n(mg/L)", x = "Alkalinity (mg/L)", color = "", y = "pH", shape = "") +
+#'   coord_cartesian(xlim = c(40, 250),ylim = c(6,10))+
+#'   theme(legend.position = "bottom")
+#'
+#' @export
+#'
+geom_corrosion_heatmap <- function(ph_range = seq(6, 10, 0.1),
+                                   alk_range = seq(1, 50, 1),
+                                   tds_average = 50,
+                                   ...) {
+  # tds = 50
+  # ph_range = seq(6, 10, 0.1)
+  # alk_range = seq(1, 50, 1)
+
+  alk_contourplot <- tibble(ph = ph_range) %>%
+    cross_join(tibble(alk = alk_range)) %>%
+    cross_join(tibble(tds = tds)) %>%
+    mutate(pH = ph, alkalinity = alk) %>%
+    define_water_chain() %>%
+    dissolve_pb_once() %>%
+    filter(defined_water_pb >0) %>%
+    mutate(dissolved_pb_mgl = convert_units(defined_water_pb, "pb","M","mg/L"),
+           log_pb = log10(dissolved_pb_mgl))
+
+  transition_line <- alk_contourplot %>%
+    select(pH, alkalinity, defined_water_controlling_solid) %>%
+    group_by(pH) %>%
+    mutate(transition = case_when(lag(defined_water_controlling_solid) != defined_water_controlling_solid ~ "Y")) %>%
+    drop_na(transition)
+
+  list(
+    geom_raster(data = alk_contourplot, aes(x = alkalinity, y = pH, fill = log_pb), interpolate = TRUE),
+    geom_line(data = transition_line, aes(x = alkalinity, y = pH), linetype = "dashed", color = "white", linewidth = 1.3),
+    geom_contour(data = alk_contourplot, aes(x = alkalinity, y = pH, z = log_pb), bins = 50, color = "white", alpha = 0.5),
+    scale_fill_viridis_c(option = "B"),
+    scale_x_continuous(expand = c(0, 0)),
+    scale_y_continuous(expand = c(0, 0))
+  )
+}
+
 #######################################################################################################################*
 #' BC Color Palette with scale_fill
 #'
